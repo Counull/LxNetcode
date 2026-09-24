@@ -1,8 +1,6 @@
-# LxUdpReliabilityLab
+# LxNetcode
 
-A small C# lab for UDP acknowledgements, packet loss, and out-of-order delivery.
-
-Not a production transport or a FishNet replacement.
+C# game networking experiments and notes. Starts with UDP acknowledgements, packet loss, and out-of-order delivery.
 
 ## References
 
