@@ -1,0 +1,17 @@
+{
+  "name": "com.counull.lxnetcode",
+  "version": "0.0.1-preview.1",
+  "displayName": "LxNetcode",
+  "description": "Source package scaffold for a from-scratch C# game networking learning project. Raw UDP Socket implementation is pending design approval.",
+  "unity": "7000.0",
+  "unityRelease": "0a10",
+  "author": {
+    "name": "Counull"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Counull/LxNetcode.git",
+    "directory": "Packages/com.counull.lxnetcode"
+  },
+  "dependencies": {}
+}

@@ -6,19 +6,32 @@ C# 游戏网络学习项目。由项目作者从零研究并手写包格式、�
 
 ## 当前阶段
 
-已建立仓库目录、维护文档和项目技能配置。Unity 工程等待编辑器安装完成后创建。Socket 设计尚未批准，没有网络实现、可运行测试或可安装的 UPM 包。
+Unity 7000.0.0a10 开发工程与 UPM 源码包骨架已建立，并通过实际编辑器编译和本地包刷新检查。Socket 设计尚未批准；目前没有网络实现或网络测试，也没有发布 tag。
 
 ## 仓库结构
 
 | 路径 | 用途 |
 | --- | --- |
 | `docs/` | 项目状态、组织决策和测试计划，随代码提交到 Git |
-| `Unity/` | Unity 开发与验证工程的预留目录 |
-| `Packages/com.counull.lxnetcode/` | 未来通过 Git URL 分发的 UPM 源码包目录 |
+| `Unity/` | Unity 7000.0.0a10 开发与验证工程 |
+| `Packages/com.counull.lxnetcode/` | UPM 源码包与纯 C# Runtime 程序集骨架 |
 | `.agents/skills/` | 随仓库分发的项目技能 |
 | `AGENTS.md` | AI 职责边界与协作规则 |
 
-开发与验证工程将消费同一份包源码。实际游戏项目以后通过 Unity Package Manager 的 Git URL 引用包，不需要先分发 DLL。包布局与接入前置条件见[组织决策](docs/ARCHITECTURE.md)。
+开发工程通过 `file:../../Packages/com.counull.lxnetcode` 消费仓库内同一份包源码。实际游戏项目以后通过 Unity Package Manager 的 Git URL 引用包，不需要先分发 DLL。包布局、同步方式和兼容基线见[组织决策](docs/ARCHITECTURE.md)。
+
+## 打开工程
+
+安装 Git LFS 后，在仓库根目录执行：
+
+```powershell
+git lfs install --local
+git lfs pull
+```
+
+使用 Unity Hub 添加并打开 `Unity/`，选择 **7000.0.0a10**。当前 Standalone 配置为 .NET Standard 2.1、CoreCLR；Runtime asmdef 禁止 UnityEngine 引用。初始化检查命令与真实结果见[测试记录](docs/TESTING.md)。
+
+图片、模型、音频等二进制资源由 `.gitattributes` 配置 LFS；源码、Unity YAML 与 `.meta` 保留为普通文本。现有封面已转入 LFS，未改写历史提交。
 
 ## 维护入口
 

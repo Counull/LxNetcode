@@ -5,7 +5,7 @@
 - 开始工作时阅读 `README.md`、`docs/STATUS.md`，再读与任务有关的设计或测试记录。
 - `docs/` 存放维护文档；`.agents/skills/` 存放项目技能，两者都纳入 Git。
 - `Unity/` 用作开发与验证工程目录；可分发源码放在 `Packages/com.counull.lxnetcode/`。
-- 当前只有仓库骨架。实际 Unity 工程、包 manifest、程序集组织和 Socket 接口仍待确定；不要把预留目录视为已完成工程。
+- Unity 7000.0.0a10 开发工程和 UPM 源码包骨架已建立；实际配置与验证结果见 `docs/STATUS.md`、`docs/TESTING.md`。Runtime 目前只有程序集元数据，Socket 接口与实现仍待设计批准。
 
 ## 项目目标与 AI 实现边界
 
@@ -56,6 +56,7 @@ Socket 模块不得解析或改写 payload，不得把发送成功解释为对�
 - 需求、设计和测试记录不等于已实现或已验证；状态文档应准确区分这些状态。
 - 行为或构建方式变化时，同步相关文档；不要写不存在的测试命令、通过结果或发布版本。
 - 保留已有 WIP；提交前检查 diff，按明确路径暂存，避免 `git add .`。
+- 二进制资源按 `.gitattributes` 使用 Git LFS；源码、Unity YAML 和 `.meta` 保持普通文本。克隆后执行 `git lfs install --local` 和 `git lfs pull`，不擅自迁移历史。
 - 本地提交与远程推送分开处理；只在获得远程推送授权时执行，不能由本地提交授权推断推送授权。
 
 ## Agent skills

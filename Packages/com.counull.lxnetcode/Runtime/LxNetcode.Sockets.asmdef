@@ -1,0 +1,8 @@
+{
+  "name": "LxNetcode.Sockets",
+  "rootNamespace": "LxNetcode.Sockets",
+  "references": [],
+  "allowUnsafeCode": false,
+  "autoReferenced": true,
+  "noEngineReferences": true
+}

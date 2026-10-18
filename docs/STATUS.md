@@ -4,13 +4,14 @@
 
 ## 当前阶段
 
-仓库骨架与工程技能配置已建立。作者正在安装 Unity，实际工程及 UPM 包初始化等待安装完成。Socket 设计未批准；没有 Socket 实现、可执行的网络测试或发布版本。
+Unity 开发工程、UPM 源码包骨架、Git LFS、维护文档与项目技能已初始化。实际编辑器编译和本地包刷新检查通过。Socket 设计未批准；没有 Socket 实现、网络测试或发布 tag。
 
 ## 初始化内容
 
 - `docs/`：维护文档及其索引。
-- `Unity/`：开发与验证工程的预留目录，通过 README 纳入 Git。
-- `Packages/com.counull.lxnetcode/`：未来 UPM 源码包的预留目录。
+- `Unity/`：实际开发与验证工程，通过本地 `file:` 路径消费仓库内的包源码。
+- `Packages/com.counull.lxnetcode/`：版本为 `0.0.1-preview.1` 的包 manifest，以及禁止 UnityEngine 引用的 `LxNetcode.Sockets` asmdef；Runtime 仅含程序集版本元数据。
+- `.gitattributes`：二进制资源使用 Git LFS，源码、Unity YAML 和 `.meta` 保持普通文本。已执行 `git lfs install --local`，当前封面转为 LFS 指针；未迁移历史。
 - `AGENTS.md`：持久化项目目标、AI 范围与设计确认要求。
 - `.agents/skills/`：Socket 设计/实现流程和只读审查技能。
 - `docs/agents/`：Matt Pocock 工程技能配置，使用 GitHub Issues（Counull/LxNetcode）、默认 triage 标签及单上下文领域文档布局。
@@ -23,23 +24,32 @@
 - 未来实际游戏项目通过 Git URL 引用 UPM 包；开发工程消费同一份包源码。
 - AI 只实现经批准的原始 UDP Socket I/O；当前初始化没有授权网络实现。
 
-## 待确认与待建立
+## 实际工程配置
 
-| 项目 | 状态 |
+| 项目 | 初始化时的实际值 |
 | --- | --- |
-| Unity 工程版本 | 等待作者安装完成后确认；仓库内没有 `ProjectVersion.txt` |
-| API Compatibility Level | 待工程创建后读取实际配置 |
-| 构建目标与脚本后端 | 待确定 |
-| UPM manifest、最低 Unity 版本 | 待确认兼容基线后建立 |
-| Socket 程序集、接口与收发模型 | 待设计及批准 |
-| 测试运行方式和依赖 | 待设计及批准，不预装第三方测试包 |
-| Git URL 安装及独立游戏工程集成 | 未运行 |
+| Unity | 7000.0.0a10，revision `4b5f18082ea8` |
+| 当前构建目标 | StandaloneWindows64 |
+| Standalone API Compatibility Level | .NET Standard 2.1，枚举值 6 |
+| Standalone 脚本后端 | CoreCLR |
+| Editor 运行时 | 10.0.10；不据此推定可使用 .NET 10 API |
+| Runtime 编译器语言版本 | C# 9.0（实际编译响应文件） |
+| Unity 序列化 | Force Text |
+| 包来源 | Local，解析至仓库 `Packages/com.counull.lxnetcode/` |
+| 包依赖 | 自有包无依赖；开发工程锁文件仅含本地包及 Unity 内建模块 |
 
-本机发现的编辑器目录为 `6000.3.21f1` 与 `6000.7.0b2`；它们只是本机安装线索，不代表项目已选择或验证的版本。本机 .NET SDK 也不能代替 Unity 兼容性验证。
+API 枚举字符串返回旧别名 `NET_Standard_2_0`；安装版官方 XML 将该别名标为弃用，并说明值对应的 `NET_Standard` 为 .NET Standard 2.1。实际编译也引用 `netstandard2.1` targeting pack，详见[测试记录](TESTING.md)。
+
+## 待设计与验证
+
+Socket 接口、收发模型、线程模型、取消/关闭、缓冲区所有权、错误和截断语义仍待设计批准。测试运行方式与依赖随设计确认，不预装第三方测试包。工程初始化不构成 Socket 实现授权。
 
 ## 验证记录
 
-网络集成测试、Unity 编译、Player 构建及 UPM 导入：未运行，相关工程与实现尚未建立。
+- Unity 批处理创建工程：退出码 0。
+- Unity 批处理编译与包检查：退出码 0，输出 `LXNETCODE_PROJECT_CHECK_PASS`；包路径、Runtime 无 Unity 引用、两次显式资源刷新均通过，临时探针已清理。
+- Git LFS 封面指针的 SHA-256 与工作区 PNG、对应本地 LFS 对象一致。远程 LFS 上传未在本次初始化中验证。
+- 独立工程 Git URL 安装、Player 构建、其他 Unity/操作系统及 UDP loopback：未运行。
 
 首次骨架初始化（`32451b6`）的静态检查已执行：
 
@@ -47,6 +57,6 @@
 - 10 份 Markdown 文档中的 12 个相对文件链接全部可解析。
 - 14 项 Git 忽略规则检查通过：生成数据被排除，维护文档、技能、包源码、Unity `.meta`、工程配置和包锁文件可纳入 Git。
 
-这些是文件格式、链接和忽略规则检查，不代表已验证技能自动选择、Unity 编译、Player 运行、UPM 安装或 UDP I/O。
+这些历史静态检查只验证文件格式、链接和忽略规则，不代表已验证技能自动选择或网络行为。当前 Unity 初始化结果以上面的实际执行记录为准。
 
 工程技能配置写入后的静态检查：13 份 Markdown 文档中的 15 个相对文件链接全部可解析；新增的三份 `docs/agents/` 配置均可被 Git 跟踪。没有创建 GitHub Issue 或远程标签。

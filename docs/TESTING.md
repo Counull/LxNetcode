@@ -2,7 +2,43 @@
 
 ## 当前状态
 
-测试计划尚未执行。当前没有实际 Unity 工程、Socket 实现或测试运行器，因此没有可报告的网络测试通过结果，也没有已建立的网络测试命令。
+工程初始化检查已实际运行并通过；Socket 实现与网络测试运行器尚未建立，以下 Socket loopback 仍为待设计批准后的计划，没有网络测试通过结果。
+
+## 工程初始化检查：2026-10-18
+
+环境：Windows、Unity 7000.0.0a10（`4b5f18082ea8`），开发工程 `E:\LxNetcode\Unity`。通过真实 Unity CLI 创建工程，退出码 0；随后实际运行以下 PowerShell 检查：
+
+```powershell
+$unityExe = 'E:\Env\Unity\7000.0.0a10\Editor\Unity.exe'
+$unityCheckProcess = Start-Process -FilePath $unityExe -ArgumentList @(
+    '-batchmode', '-nographics', '-quit',
+    '-projectPath', 'E:\LxNetcode\Unity',
+    '-executeMethod', 'LxNetcode.Development.LxNetcodeProjectCheck.Run',
+    '-logFile', 'E:\LxNetcode\Unity\Logs\project-check.log'
+) -WindowStyle Hidden -Wait -PassThru
+$unityCheckProcess.ExitCode
+```
+
+最终运行退出码 **0**，日志输出 `LXNETCODE_PROJECT_CHECK_PASS`，没有 C# 编译错误或警告。检查代码位于 `Unity/Assets/Editor/LxNetcodeProjectCheck.cs`，报告写入被忽略的 `Unity/Logs/project-check.json`。
+
+| 检查 | 实际结果 |
+| --- | --- |
+| Unity 注册的包来源/版本 | Local / `0.0.1-preview.1` |
+| 包解析路径 | `E:\LxNetcode\Packages\com.counull.lxnetcode` |
+| Runtime 编译与加载 | `LxNetcode.Sockets` 已加载；程序集引用中没有 UnityEngine/UnityEditor |
+| 本地源码刷新 | 包目录临时文本资源写入两种不同内容，两次显式同步刷新均通过 Unity TextAsset 导入结果校验；探针及 `.meta` 已清理 |
+| 当前构建目标 | StandaloneWindows64 |
+| Standalone API Compatibility Level | 值 6，返回旧别名 `NET_Standard_2_0`，实际为 .NET Standard 2.1 |
+| Standalone 脚本后端 | CoreCLR |
+| Editor 运行时 | 10.0.10 |
+| Runtime 编译参数 | `-langversion:9.0`，引用 `netstandard2.1` targeting pack，没有 UnityEngine/UnityEditor 引用 |
+| 开发工程包锁文件 | 仅自有 Local 包与 Unity builtin 模块，没有 registry/Git 包依赖 |
+
+API 解释同时核对了安装版 `Editor/Data/Managed/UnityEditor.xml`：`NET_Standard` 表示 .NET Standard 2.1，`NET_Standard_2_0` 为弃用别名；编译参数来自实际 `Unity/Library/Bee/artifacts/1900b0aEDbg.dag/LxNetcode.Sockets.rsp`。不能由 Editor 运行时 10.0.10 推断 Socket 模块可使用任意 .NET 10 API。
+
+Git LFS 已执行 `git lfs install --local`。封面转为指针后，工作区 PNG 与对应本地 LFS 对象均匹配指针的 SHA-256 `0f044bbff711a6640d3989c98bba7b267d13818893b699ff6effd23d27ab9790`，长度均为 1,885,982 字节；工作区保留真实图片。本次未迁移历史，也没有把本地验证当作远程 LFS 上传验证。
+
+此外，通过本机 Python 标准库与 Git 执行静态检查：14 份 Markdown 的 20 个相对链接、UPM 清单及本地路径、包依赖来源、7 个资源/目录的 Unity 元数据、13 项 Git 忽略规则，以及临时探针清理均通过。这些检查未安装任何项目依赖。
 
 ## Socket loopback 测试计划
 
@@ -23,13 +59,13 @@
 
 每个等待测试设置有限期限并可靠释放 Socket。测试应捕获失败，不依赖固定端口、无限等待、外网或必须有特定到达顺序。截断和取消行为要在目标平台实际运行，不能从 Windows 结果推定其他平台通过。
 
-## Unity 与 UPM 验证计划
+## 尚未运行的 Unity 与 UPM 验证
 
-- 在实际选定的 Unity 工程中，通过本地包路径编译和运行适用测试。
+- Socket 模块设计批准并实现后，在开发工程中通过本地包运行相应 loopback 测试。
 - 在独立消费工程中，通过真实的 Git URL 和固定发布引用安装；确认使用包目录中的代码。
 - 在所声明支持的 Player 平台和脚本后端验证相应行为。尚未执行的组合明确标为未运行。
 
-上述项目均未运行。只有文档或技能检查时，不声称验证了 Unity 编译、Player 运行、UPM 安装或 UDP I/O。
+上述项目均未运行。已通过的工程初始化检查只证明本机 Editor 编译、本地包路径及显式资源刷新；不证明 Player 运行、其他 Unity/操作系统、远程 Git URL/LFS 安装、自动文件监听时延或 UDP I/O。
 
 ## 执行记录要求
 
