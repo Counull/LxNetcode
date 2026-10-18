@@ -11,6 +11,8 @@ LxNetcode/
 ├── docs/                          维护文档
 ├── Unity/                         Unity 7000.0.0a10 开发工程
 │   ├── Assets/Editor/             工程初始化检查
+│   ├── Assets/Settings/           开发工程 URP 资源
+│   ├── Assets/Scenes/             仅含默认相机与方向光的基础场景
 │   ├── Packages/                  开发工程 manifest 与锁文件
 │   └── ProjectSettings/
 ├── Packages/
@@ -54,7 +56,13 @@ Git 依赖由消费工程的 `Packages/manifest.json` 声明；包自身的 `pac
 
 源码也可以由独立 `.csproj` 编译和测试，两种组织方式并不互斥。是否增加该工程应由测试需求决定，不为预先产出 DLL 增加构建流程；当前没有额外 .NET 工程。
 
-UPM 包不要求使用 Native DLL。当前没有 Native 插件、第三方依赖或上层网络框架；开发工程仅保留 Unity 自动生成的内建模块和自有本地包。
+UPM 包不要求使用 Native DLL。源码包没有 Native 插件、第三方依赖或上层网络框架。开发工程还包含 Unity 官方 URP 17.7.0 及其依赖，用于初始化可渲染的工程；这些依赖不进入 `com.counull.lxnetcode/package.json`，Runtime 程序集也不引用 URP。
+
+最初使用命令行创建空工程时没有设置 Render Pipeline Asset，图形界面因此无法渲染。[Unity 官方说明](https://discussions.unity.com/t/the-path-to-a-single-render-pipeline-in-unity-7/1737908)确认 Built-in Render Pipeline 已在 Unity 7 移除。现使用编辑器自带版本的 URP，通过其公开 API 创建最小管线与 Renderer，并保存 Unity 自动生成的 Global Settings 和默认 Volume Profile；没有导入模板教程或示例游戏逻辑。
+
+`Development.unity` 只有默认相机与方向光，供打开工程与后续独立设计测试时使用，不承担 Tick、状态同步或任何网络功能。旧 Input Manager 的弃用警告暂时保留。
+
+编辑器布局存放在被忽略的 `Unity/UserSettings/Layouts/`。本机曾继承 Unity 6 的最大化 Game 布局，已备份后用 Unity 7 自带 `Default.wlt` 恢复，并通过实际窗口状态检查；这项修复不把机器分辨率和个人布局写入 Git。
 
 ## 实际兼容基线
 

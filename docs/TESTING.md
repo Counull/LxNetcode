@@ -2,9 +2,9 @@
 
 ## 当前状态
 
-工程初始化检查已实际运行并通过；Socket 实现与网络测试运行器尚未建立，以下 Socket loopback 仍为待设计批准后的计划，没有网络测试通过结果。
+工程初始化检查已实际运行并通过。初次检查遗漏的渲染管线和图形界面现已补查并修复，见下文独立记录；Socket 实现与网络测试运行器尚未建立，以下 Socket loopback 仍为待设计批准后的计划，没有网络测试通过结果。
 
-## 工程初始化检查：2026-10-18
+## 首次工程初始化检查：2026-10-18
 
 环境：Windows、Unity 7000.0.0a10（`4b5f18082ea8`），开发工程 `E:\LxNetcode\Unity`。通过真实 Unity CLI 创建工程，退出码 0；随后实际运行以下 PowerShell 检查：
 
@@ -32,13 +32,44 @@ $unityCheckProcess.ExitCode
 | Standalone 脚本后端 | CoreCLR |
 | Editor 运行时 | 10.0.10 |
 | Runtime 编译参数 | `-langversion:9.0`，引用 `netstandard2.1` targeting pack，没有 UnityEngine/UnityEditor 引用 |
-| 开发工程包锁文件 | 仅自有 Local 包与 Unity builtin 模块，没有 registry/Git 包依赖 |
+| 当时的开发工程包锁文件 | 仅自有 Local 包与 Unity builtin 模块；后续 URP 修复已增加下文列明的 Unity 官方依赖 |
 
 API 解释同时核对了安装版 `Editor/Data/Managed/UnityEditor.xml`：`NET_Standard` 表示 .NET Standard 2.1，`NET_Standard_2_0` 为弃用别名；编译参数来自实际 `Unity/Library/Bee/artifacts/1900b0aEDbg.dag/LxNetcode.Sockets.rsp`。不能由 Editor 运行时 10.0.10 推断 Socket 模块可使用任意 .NET 10 API。
 
 Git LFS 已执行 `git lfs install --local`。封面转为指针后，工作区 PNG 与对应本地 LFS 对象均匹配指针的 SHA-256 `0f044bbff711a6640d3989c98bba7b267d13818893b699ff6effd23d27ab9790`，长度均为 1,885,982 字节；工作区保留真实图片。本次未迁移历史，也没有把本地验证当作远程 LFS 上传验证。
 
 此外，通过本机 Python 标准库与 Git 执行静态检查：14 份 Markdown 的 20 个相对链接、UPM 清单及本地路径、包依赖来源、7 个资源/目录的 Unity 元数据、13 项 Git 忽略规则，以及临时探针清理均通过。这些检查未安装任何项目依赖。
+
+## 图形初始化修复：2026-10-18
+
+用户截图暴露了首次检查遗漏的两项问题：Game 最大化且 Inspector/Console 浮动，以及 Game 显示 `Your project has no render pipeline asset`。日志确认编辑器继承了全局 `default-6000.dwlt`，Graphics 中的管线为空。首次批处理通过不能作为图形初始化完整的证据。
+
+保存并关闭 Unity 后，将原布局与工程配置备份到本机忽略目录 `Unity/UserSettings/InitializationRepair-20261018T143742Z/`。开发工程添加编辑器自带的 URP 17.7.0，并通过 URP 公开 API 生成 Renderer、管线及 Unity 自动建立的 Global Settings/Volume Profile；`Development.unity` 仅保存默认相机和方向光。自有源码包未改动，仍无 UnityEngine 或包依赖。
+
+依赖解析实际增加了 Unity builtin 的 Burst 2.0.0、Collections 6.7.0、Graph Authoring 1.0.0、Profiling Core 1.0.3、SRP Core/URP/URP Config/Shader Graph 17.7.0，以及 Unity registry 的 Searcher 4.9.5。没有增加上层网络库或第三方直接依赖。
+
+| 实际检查 | 结果 |
+| --- | --- |
+| 在修复前运行新增的管线非空检查 | 退出码 1，捕获 `Development project has no render pipeline asset.`，日志 `repair-baseline.log` |
+| 使用 GPU 的一次性初始化与渲染检查 | 退出码 0；`LXNETCODE_RENDER_PASS`、`LXNETCODE_PROJECT_CHECK_PASS`、`LXNETCODE_GRAPHICS_REPAIR_PASS` |
+| 渲染结果 | Direct3D12，640×360 PNG；中心像素 `RGBA(0.149, 0.651, 0.851, 1.000)` 符合临时青色立方体，已实际查看图像；测试物体和材质随后清理，未保存到场景 |
+| 本地默认布局 | 从安装版 `Default.wlt` 恢复；真实图形编辑器日志确认加载 `UserSettings/Layouts/default-7000.dwlt` |
+| 首次布局探针 | 退出码 1：探针沿用了旧类型名 `SceneHierarchyWindow`；实际 Unity 7 类型为 `Unity.Hierarchy.Editor.HierarchyWindow`，不是面板缺失 |
+| 最终布局检查 | 退出码 0，`LXNETCODE_LAYOUT_PASS`；Scene、Game、Hierarchy、Inspector、Project、Console 均实际存在、`docked=True`、`maximized=False` |
+| 清理临时脚本后的最终编译与包检查 | 退出码 0，`project-check-final.log` 输出 `LXNETCODE_PROJECT_CHECK_PASS`；保留的检查代码已实际重新编译 |
+
+两次成功的临时检查所用参数分别为：
+
+```text
+-batchmode -quit -projectPath E:\LxNetcode\Unity -executeMethod LxNetcode.Development.LxNetcodeInitializationRepair.SetupAndCheck -logFile E:\LxNetcode\Unity\Logs\graphics-repair.log
+-projectPath E:\LxNetcode\Unity -executeMethod LxNetcode.Development.LxNetcodeInitializationRepair.VerifyLayoutAndExit -logFile E:\LxNetcode\Unity\Logs\layout-repair-final.log
+```
+
+第二项是启动后检查并自动退出的真实图形编辑器实例，两项均未使用 `-nographics`。一次性修复脚本已从 `Assets` 清理，仅在本机 `Unity/Logs/initialization-repair/` 保留源文件用于审计；以上是实际执行记录，不作为日常可直接运行的命令。日常保留的 `LxNetcodeProjectCheck.Run` 已增加渲染管线非空检查，其命令仍见上方代码块。
+
+渲染图 `Unity/Logs/render-check.png`、窗口状态 `Unity/Logs/layout-check.txt` 和日志均在本机忽略目录。当前管线实际解析为 `Assets/Settings/LxNetcode_RenderPipeline.asset`、类型 `UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset`；Runtime 无 Unity 引用和两次本地包刷新再次通过。旧 Input Manager 的弃用警告仍存在。本次没有验证 Player 构建或 Socket 行为，也不把程序读取的窗口状态当作人工桌面视觉验收。
+
+最终静态检查也已通过：14 份 Markdown 的 21 个相对链接、14 个资源/目录的唯一 Unity GUID、Graphics 到管线的引用、开发场景仅含默认相机与方向光、临时脚本与包刷新探针已清理，以及日志/个人布局/备份的 Git 忽略规则。`Packages/com.counull.lxnetcode/` 没有 diff。
 
 ## Socket loopback 测试计划
 
@@ -65,7 +96,7 @@ Git LFS 已执行 `git lfs install --local`。封面转为指针后，工作区 
 - 在独立消费工程中，通过真实的 Git URL 和固定发布引用安装；确认使用包目录中的代码。
 - 在所声明支持的 Player 平台和脚本后端验证相应行为。尚未执行的组合明确标为未运行。
 
-上述项目均未运行。已通过的工程初始化检查只证明本机 Editor 编译、本地包路径及显式资源刷新；不证明 Player 运行、其他 Unity/操作系统、远程 Git URL/LFS 安装、自动文件监听时延或 UDP I/O。
+上述项目均未运行。已通过的工程检查覆盖本机 Editor 编译、本地包、显式资源刷新、Direct3D12 渲染及编辑器窗口状态；不证明 Player 运行、其他 Unity/操作系统、远程 Git URL/LFS 安装、自动文件监听时延或 UDP I/O。
 
 ## 执行记录要求
 

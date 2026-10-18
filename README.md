@@ -29,7 +29,9 @@ git lfs install --local
 git lfs pull
 ```
 
-使用 Unity Hub 添加并打开 `Unity/`，选择 **7000.0.0a10**。当前 Standalone 配置为 .NET Standard 2.1、CoreCLR；Runtime asmdef 禁止 UnityEngine 引用。初始化检查命令与真实结果见[测试记录](docs/TESTING.md)。
+使用 Unity Hub 添加并打开 `Unity/`，选择 **7000.0.0a10**，打开 `Assets/Scenes/Development.unity`。开发工程已配置 Unity 官方 URP 17.7.0；当前 Standalone 配置为 .NET Standard 2.1、CoreCLR，Runtime asmdef 禁止 UnityEngine 引用。初始化检查命令、实际 GPU 渲染与布局检查结果见[测试记录](docs/TESTING.md)。
+
+若编辑器继承了旧版本的最大化/浮动布局，在右上角 `Layout` 菜单选择 `Default`。本机已恢复并验证六个常用面板的停靠状态；布局属于 `UserSettings`，不纳入 Git。
 
 图片、模型、音频等二进制资源由 `.gitattributes` 配置 LFS；源码、Unity YAML 与 `.meta` 保留为普通文本。现有封面已转入 LFS，未改写历史提交。
 

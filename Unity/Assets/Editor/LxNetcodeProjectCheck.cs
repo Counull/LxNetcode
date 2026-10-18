@@ -7,11 +7,12 @@ using UnityEditor.Build;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Assemblies;
+using UnityEngine.Rendering;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace LxNetcode.Development
 {
-    /// <summary>仅在开发工程中验证包接入与编译边界，不随 UPM 包分发。</summary>
+    /// <summary>验证开发工程的包接入、编译边界及渲染管线配置，不随 UPM 包分发。</summary>
     public static class LxNetcodeProjectCheck
     {
         private const string PackageName = "com.counull.lxnetcode";
@@ -32,6 +33,8 @@ namespace LxNetcode.Development
             public string runtimeAssembly;
             public bool noEngineReferences;
             public bool localSourceRefresh;
+            public string renderPipelineAsset;
+            public string renderPipelineType;
         }
 
         /// <summary>供 -executeMethod 调用，失败时抛出异常令批处理返回非零退出码。</summary>
@@ -68,6 +71,10 @@ namespace LxNetcode.Development
                     throw new InvalidOperationException("Runtime references a Unity assembly: " + reference.Name);
             }
 
+            RenderPipelineAsset renderPipeline = GraphicsSettings.currentRenderPipeline;
+            if (renderPipeline == null)
+                throw new InvalidOperationException("Development project has no render pipeline asset.");
+
             VerifyLocalSourceRefresh(package.resolvedPath);
 
             var apiLevel = PlayerSettings.GetApiCompatibilityLevel(NamedBuildTarget.Standalone);
@@ -84,7 +91,9 @@ namespace LxNetcode.Development
                 resolvedPath = Path.GetFullPath(package.resolvedPath),
                 runtimeAssembly = runtimeAssembly.GetName().Name,
                 noEngineReferences = true,
-                localSourceRefresh = true
+                localSourceRefresh = true,
+                renderPipelineAsset = AssetDatabase.GetAssetPath(renderPipeline),
+                renderPipelineType = renderPipeline.GetType().FullName
             };
             string reportPath = Path.GetFullPath(Path.Combine(Application.dataPath,
                 "..", "Logs", "project-check.json"));

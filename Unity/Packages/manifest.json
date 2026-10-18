@@ -39,6 +39,7 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0",
-    "com.counull.lxnetcode": "file:../../Packages/com.counull.lxnetcode"
+    "com.counull.lxnetcode": "file:../../Packages/com.counull.lxnetcode",
+    "com.unity.render-pipelines.universal": "17.7.0"
   }
 }
