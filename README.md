@@ -1,5 +1,7 @@
 # LxNetcode
 
+![LxNetcode](docs/images/lxnetcode-cover.png)
+
 C# 游戏网络学习项目。由项目作者从零研究并手写包格式、协议、连接状态、可靠性及游戏网络功能；AI 的实现职责仅限于必要且可靠的原始 UDP Socket I/O 封装。
 
 ## 当前阶段
