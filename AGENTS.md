@@ -58,8 +58,20 @@ Socket 模块不得解析或改写 payload，不得把发送成功解释为对�
 - 保留已有 WIP；提交前检查 diff，按明确路径暂存，避免 `git add .`。
 - 本地提交与远程推送分开处理；只在获得远程推送授权时执行，不能由本地提交授权推断推送授权。
 
-## 项目技能
+## Agent skills
 
 - 设计或实现 Socket 模块时使用 `.agents/skills/lxnetcode-socket-workflow/SKILL.md`。
 - 审查 Socket 改动时使用 `.agents/skills/lxnetcode-socket-review/SKILL.md`。
 - 技能细化工作流程，不能扩大上述授权边界。
+
+### Issue tracker
+
+使用 GitHub Issues：Counull/LxNetcode。具体约定见 `docs/agents/issue-tracker.md`。
+
+### Triage labels
+
+采用五项默认标签，见 `docs/agents/triage-labels.md`。
+
+### Domain docs
+
+采用 single-context：根目录 `CONTEXT.md` 与 `docs/adr/`。读取与维护规则见 `docs/agents/domain.md`。

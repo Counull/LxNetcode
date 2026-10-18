@@ -4,7 +4,7 @@ C# 游戏网络学习项目。由项目作者从零研究并手写包格式、�
 
 ## 当前阶段
 
-正在初始化仓库目录、维护文档和项目技能。Socket 设计尚未批准，没有网络实现、可运行测试或可安装的 UPM 包。
+已建立仓库目录、维护文档和项目技能配置。Unity 工程等待编辑器安装完成后创建。Socket 设计尚未批准，没有网络实现、可运行测试或可安装的 UPM 包。
 
 ## 仓库结构
 
@@ -23,6 +23,8 @@ C# 游戏网络学习项目。由项目作者从零研究并手写包格式、�
 从[文档索引](docs/README.md)进入维护文档；[项目状态](docs/STATUS.md)记录已完成事项和待确认项，[测试计划](docs/TESTING.md)区分计划与实际执行结果。
 
 项目技能包括 `$lxnetcode-socket-workflow` 和 `$lxnetcode-socket-review`。技能位置采用 [OpenAI 官方仓库技能约定](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills)。
+
+Matt Pocock 工程技能已配置使用 GitHub Issues、默认 triage 标签和单上下文领域文档布局；配置文件位于 `docs/agents/`，由 `AGENTS.md` 引用。选择 GitHub 跟踪方式不代表已创建远程 Issue 或标签。
 
 ## 学习资料
 
