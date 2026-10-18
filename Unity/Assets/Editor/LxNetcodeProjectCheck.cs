@@ -46,11 +46,11 @@ namespace LxNetcode.Development
                 throw new InvalidOperationException("LxNetcode package is not registered.");
 
             string expectedPath = Path.GetFullPath(Path.Combine(Application.dataPath,
-                "..", "..", "Packages", PackageName));
-            if (package.source != PackageSource.Local ||
+                "..", "Packages", PackageName));
+            if (package.source != PackageSource.Embedded ||
                 !string.Equals(Path.GetFullPath(package.resolvedPath), expectedPath,
                     StringComparison.OrdinalIgnoreCase))
-                throw new InvalidOperationException("Development project must reference the repository's local package.");
+                throw new InvalidOperationException("Development project must use the embedded package in its Packages directory.");
 
             Assembly runtimeAssembly = null;
             foreach (Assembly loadedAssembly in CurrentAssemblies.GetLoadedAssemblies())

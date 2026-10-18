@@ -5,7 +5,9 @@
 | 文档 | 维护内容 |
 | --- | --- |
 | [STATUS.md](STATUS.md) | 当前阶段、已完成事项、待确认项及验证记录 |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | 仓库目录职责、UPM 分发方式与尚未批准的设计事项 |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | 仓库目录职责、UPM 分发方式与兼容基线 |
+| [UNITY_TOOLS.md](UNITY_TOOLS.md) | 官方 Unity CLI/MCP、Pipeline、Rider 集成与实际连接验证 |
+| [SOCKET.md](SOCKET.md) | 非阻塞 UDP 公开接口、线程、所有权、错误、停止与截断契约 |
 | [TESTING.md](TESTING.md) | 外部行为测试计划、执行记录要求和验证边界 |
 | [agents/issue-tracker.md](agents/issue-tracker.md) | 工程技能使用的 GitHub Issues 约定 |
 | [agents/triage-labels.md](agents/triage-labels.md) | 五项默认 triage 标签与作者保留任务的处理规则 |

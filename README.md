@@ -6,7 +6,7 @@ C# 游戏网络学习项目。由项目作者从零研究并手写包格式、�
 
 ## 当前阶段
 
-Unity 7000.0.0a10 开发工程与 UPM 源码包骨架已建立，并通过实际编辑器编译和本地包刷新检查。Socket 设计尚未批准；目前没有网络实现或网络测试，也没有发布 tag。
+Unity 7000.0.0a10 开发工程与内嵌 UPM 源码包已建立。原始 UDP Socket 封装采用同步非阻塞方案，公开接口与边界见 [Socket 契约](docs/SOCKET.md)，实际执行结果与未验证范围见[测试记录](docs/TESTING.md)。尚未创建发布 tag。
 
 ## 仓库结构
 
@@ -14,11 +14,11 @@ Unity 7000.0.0a10 开发工程与 UPM 源码包骨架已建立，并通过实际
 | --- | --- |
 | `docs/` | 项目状态、组织决策和测试计划，随代码提交到 Git |
 | `Unity/` | Unity 7000.0.0a10 开发与验证工程 |
-| `Packages/com.counull.lxnetcode/` | UPM 源码包与纯 C# Runtime 程序集骨架 |
+| `Unity/Packages/com.counull.lxnetcode/` | 工程内嵌的 UPM 源码包与纯 C# UDP Socket 程序集 |
 | `.agents/skills/` | 随仓库分发的项目技能 |
 | `AGENTS.md` | AI 职责边界与协作规则 |
 
-开发工程通过 `file:../../Packages/com.counull.lxnetcode` 消费仓库内同一份包源码。实际游戏项目以后通过 Unity Package Manager 的 Git URL 引用包，不需要先分发 DLL。包布局、同步方式和兼容基线见[组织决策](docs/ARCHITECTURE.md)。
+包源码直接放在开发工程的 `Unity/Packages/` 下，由 Unity 识别为 Embedded Package；在编辑器的 Packages 中即可维护同一份源码。实际游戏项目以后通过 Unity Package Manager 的 Git URL（`?path=/Unity/Packages/com.counull.lxnetcode`）引用包，不需要先分发 DLL。包布局、同步方式和兼容基线见[组织决策](docs/ARCHITECTURE.md)。
 
 ## 打开工程
 

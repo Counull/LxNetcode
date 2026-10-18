@@ -4,14 +4,14 @@
 
 ## 当前阶段
 
-Unity 开发工程、UPM 源码包骨架、Git LFS、维护文档与项目技能已初始化。最初的批处理检查遗漏了渲染管线与图形界面；现已补齐 URP，并通过实际 GPU 渲染和编辑器布局检查。Socket 设计未批准；没有 Socket 实现、网络测试或发布 tag。
+Unity 开发工程、内嵌 UPM 源码包、Git LFS、维护文档与项目技能已建立。原始 UDP Socket 已按同步非阻塞方案实现；截断问题修复后，真实 Unity loopback **30 通过、0 失败、0 跳过，退出码 0**。公开接口与所有权见 [SOCKET.md](SOCKET.md)，执行证据见 [TESTING.md](TESTING.md)。尚无发布 tag。
 
 ## 初始化内容
 
 - `docs/`：维护文档及其索引。
-- `Unity/`：实际开发与验证工程，通过本地 `file:` 路径消费仓库内的包源码。
+- `Unity/`：实际开发与验证工程，包源码直接位于工程内的 `Packages/`，由 Unity 作为 Embedded Package 导入。
 - 开发工程 Graphics 使用 URP 17.7.0，基础场景为 `Assets/Scenes/Development.unity`（默认相机、方向光）；本机旧布局已备份并恢复，布局不纳入 Git。
-- `Packages/com.counull.lxnetcode/`：版本为 `0.0.1-preview.1` 的包 manifest，以及禁止 UnityEngine 引用的 `LxNetcode.Sockets` asmdef；Runtime 仅含程序集版本元数据。
+- `Unity/Packages/com.counull.lxnetcode/`：版本为 `0.0.1-preview.1` 的包 manifest，以及禁止 UnityEngine 引用的 `LxNetcode.Sockets` asmdef。
 - `.gitattributes`：二进制资源使用 Git LFS，源码、Unity YAML 和 `.meta` 保持普通文本。已执行 `git lfs install --local`，当前封面转为 LFS 指针；未迁移历史。
 - `AGENTS.md`：持久化项目目标、AI 范围与设计确认要求。
 - `.agents/skills/`：Socket 设计/实现流程和只读审查技能。
@@ -23,11 +23,11 @@ Unity 开发工程、UPM 源码包骨架、Git LFS、维护文档与项目技能
 - 维护文档与项目技能随仓库提交到 Git。
 - `docs/` 与 Unity 工程目录分别组织。
 - 未来实际游戏项目通过 Git URL 引用 UPM 包；开发工程消费同一份包源码。
-- AI 只实现经批准的原始 UDP Socket I/O；当前初始化没有授权网络实现。
+- 作者要求按游戏最佳实践选择接收模型，本阶段采用同步非阻塞原始 UDP I/O；不提供上层协议功能。
 
 ## 实际工程配置
 
-| 项目 | 初始化时的实际值 |
+| 项目 | 当前实际值 |
 | --- | --- |
 | Unity | 7000.0.0a10，revision `4b5f18082ea8` |
 | 当前构建目标 | StandaloneWindows64 |
@@ -36,25 +36,30 @@ Unity 开发工程、UPM 源码包骨架、Git LFS、维护文档与项目技能
 | Editor 运行时 | 10.0.10；不据此推定可使用 .NET 10 API |
 | Runtime 编译器语言版本 | C# 9.0（实际编译响应文件） |
 | Unity 序列化 | Force Text |
-| 包来源 | Local，解析至仓库 `Packages/com.counull.lxnetcode/` |
+| 包来源 | Embedded，实际解析至 `Unity/Packages/com.counull.lxnetcode/` |
 | 渲染管线 | Unity 官方 URP 17.7.0，仅用于开发工程 |
-| 包依赖 | 自有包无依赖；开发工程含本地包、Unity 内建模块及 URP 的 Unity 官方依赖，Searcher 4.9.5 来自 Unity registry |
+| 包依赖 | 自有包无依赖；开发工程含 Unity 内建模块、URP 17.7.0、Pipeline 0.8.0-exp.1、Rider 3.1.0 及官方传递依赖，详见 [开发工具](UNITY_TOOLS.md) |
 
 API 枚举字符串返回旧别名 `NET_Standard_2_0`；安装版官方 XML 将该别名标为弃用，并说明值对应的 `NET_Standard` 为 .NET Standard 2.1。实际编译也引用 `netstandard2.1` targeting pack，详见[测试记录](TESTING.md)。
 
-## 待设计与验证
+## Socket 实现与验证边界
 
-Socket 接口、收发模型、线程模型、取消/关闭、缓冲区所有权、错误和截断语义仍待设计批准。测试运行方式与依赖随设计确认，不预装第三方测试包。工程初始化不构成 Socket 实现授权。
+`UdpSocket` 提供 `Bind`、`LocalEndPoint`、`SendTo`、`TryReceiveFrom` 和 `Dispose`。一次处理一个 datagram，没有挂起接收、后台线程或托管接收队列。停止调用即停止主动接收；同一把锁协调 I/O 与关闭。调用方拥有数组，endpoint 使用独立快照。每实例固定 64 KiB 暂存，容量不足抛 `MessageSize` 且不写入调用方数组；空 datagram 是成功接收。
+
+开发工程的 30 项 loopback 测试使用真实 Socket，最终全部通过；运行器不依赖测试框架。官方 Pipeline 的传递依赖包含 Unity Test Framework/NUnit，仅属于开发工程。独立审查未发现未解决的 P1/P2 问题，Rider 对三份源码的实际语义检查无错误，仍有已核对的警告与风格建议。Player、其他操作系统/Unity 版本及远程 Git URL 安装尚未验证；IPv6 jumbogram 不支持。
 
 ## 验证记录
 
 - Unity 批处理创建工程：退出码 0。
 - Unity 批处理编译与包检查：退出码 0，输出 `LXNETCODE_PROJECT_CHECK_PASS`；包路径、Runtime 无 Unity 引用、两次显式资源刷新均通过，临时探针已清理。
+- 包已迁入 `Unity/Packages/com.counull.lxnetcode/`，迁移时 13 个文件的 SHA-256 全部一致，保留 `.meta` GUID 和 Socket 任务的在途源码。移除自有包的旧 `file:` 声明，Unity 自动生成 Embedded 锁项；迁移后项目检查实际退出码 0，包路径、Runtime 无 Unity 引用、两次显式刷新及 URP 配置均通过。首次检查因测试脚本类型歧义退出 1，修正后重跑通过，见[测试记录](TESTING.md)。
 - 图形初始化修复：新增的管线检查先复现缺失问题（退出码 1），修复后检查通过；Direct3D12 实际渲染 640×360 图像并校验中心测试像素通过，修复进程退出码 0。
 - 编辑器布局：真实图形编辑器加载项目本地默认布局，六个常用面板均为 `docked=True`、`maximized=False`，最终校验进程退出码 0。证据和一次校验类型名适配失败见[测试记录](TESTING.md)。
 - Unity 的旧 Input Manager 弃用警告仍存在；本次未改变输入系统。
 - Git LFS 封面指针的 SHA-256 与工作区 PNG、对应本地 LFS 对象一致；初始化提交 `93c08e1` 推送时已成功上传 1 个 LFS 对象，远程下载仍未验证。
-- 独立工程 Git URL 安装、Player 构建、其他 Unity/操作系统及 UDP loopback：未运行。
+- Socket 首次 loopback：26 通过、3 截断失败；原生探针证明当前 Unity 的小缓冲区 `ReceiveMessageFrom` 返回部分字节但无截断标志。修复为固定单包暂存后检查调用方容量，最终 30 通过、0 失败、0 跳过，退出码 0，IPv4/IPv6 截断与恢复均通过。
+- 官方 Unity MCP 实际握手、178 项工具发现、工程状态读取和项目检查通过；Rider 已生成并识别三个 C# 工程，已使用 Rider MCP 修改代码并完成语义检查。详见 [开发工具](UNITY_TOOLS.md) 与 [测试记录](TESTING.md)。
+- 独立工程 Git URL 安装、Player 构建、其他 Unity/操作系统：未运行。
 
 首次骨架初始化（`32451b6`）的静态检查已执行：
 

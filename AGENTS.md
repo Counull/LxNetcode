@@ -4,8 +4,8 @@
 
 - 开始工作时阅读 `README.md`、`docs/STATUS.md`，再读与任务有关的设计或测试记录。
 - `docs/` 存放维护文档；`.agents/skills/` 存放项目技能，两者都纳入 Git。
-- `Unity/` 用作开发与验证工程目录；可分发源码放在 `Packages/com.counull.lxnetcode/`。
-- Unity 7000.0.0a10 开发工程和 UPM 源码包骨架已建立；实际配置与验证结果见 `docs/STATUS.md`、`docs/TESTING.md`。Runtime 目前只有程序集元数据，Socket 接口与实现仍待设计批准。
+- `Unity/` 用作开发与验证工程目录；可分发源码作为内嵌 UPM 包放在 `Unity/Packages/com.counull.lxnetcode/`，`Unity/Assets/` 存放开发场景与验证脚本。
+- Unity 7000.0.0a10 开发工程和 UPM 源码包已建立；实际配置与验证结果见 `docs/STATUS.md`、`docs/TESTING.md`。当前 Socket 契约见 `docs/SOCKET.md`；后续行为变更仍须遵守设计确认要求。
 
 ## 项目目标与 AI 实现边界
 

@@ -18,7 +18,7 @@ description: Design and implement LxNetcode raw UDP Socket I/O after explicit de
 ## 获批后实现与验证
 
 - 按获批契约实现原始 I/O，不解析、序列化或改写 payload；不添加 `AGENTS.md` 中由作者保留的协议或游戏网络功能。
-- 包源码位于 `Packages/com.counull.lxnetcode/`，`Unity/` 仅用于开发和验证。运行时保持纯 C#，不依赖 UnityEngine；包不得引用验证工程的代码或场景。
+- 包源码作为内嵌 UPM 包位于 `Unity/Packages/com.counull.lxnetcode/`，开发场景与验证脚本放在 `Unity/Assets/`。运行时保持纯 C#，不依赖 UnityEngine；包不得引用验证工程的代码或场景。
 - 不擅自引入依赖、Native 插件或上层网络框架。不为了 DLL 分发增加构建流程。
 - 保留 datagram 边界和发送方 endpoint。发送成功只表示本地发送操作完成，不能解释为对端收到或提供可靠、有序传输。
 - 实际运行适用的 loopback 测试，覆盖边界、取消、关闭及释放；在承诺支持的平台验证截断行为。没有可用运行环境时明确报告未运行。
