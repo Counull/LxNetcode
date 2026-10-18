@@ -1,0 +1,25 @@
+# Unity generated data in the development project tree.
+/Unity/**/[Ll]ibrary/
+/Unity/**/[Tt]emp/
+/Unity/**/[Oo]bj/
+/Unity/**/[Ll]ogs/
+/Unity/**/[Uu]ser[Ss]ettings/
+/Unity/**/[Bb]uild/
+/Unity/**/[Bb]uilds/
+/Unity/**/[Mm]emoryCaptures/
+/Unity/**/[Rr]ecordings/
+/Unity/**/sysinfo.txt
+/Unity/**/*.csproj
+/Unity/**/*.sln
+/Unity/**/*.slnx
+
+# .NET and editor generated data.
+**/bin/
+**/obj/
+**/.vs/
+**/.idea/
+*.user
+*.suo
+*.userprefs
+
+# Keep docs, repository skills, Unity .meta files, manifests and lock files tracked.
